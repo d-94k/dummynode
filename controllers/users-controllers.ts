@@ -12,19 +12,21 @@ export const getUsers = async (req: Request, res: Response) => {
 
 
 export const createUser = async (req: Request, res: Response, next: NextFunction) => {
-    const error = validationResult(req)
-    if (!error.isEmpty()) {
-        return next(new HttpError('Please insert valid inputs', 422))
+    const Error = validationResult(req);
+    if (!Error.isEmpty()) {
+        return new HttpError("Invalid user", 422)
     }
-
-
-    const { username, password } = req.body
-    const user = await prisma.user.create({
+    const { username, password } = req.body;
+    let user: any;
+    try {
+    user = await prisma.user.create({
         data: {
             username: username,
             password: password
         }
-    })
+    })} catch (error) {
+        
+    }
     res.json(user)
 }
 

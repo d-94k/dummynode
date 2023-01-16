@@ -9,20 +9,20 @@ const app = express()
 
 app.use(express.json())
 
-app.use('/api/users/', usersRouter)
+app.use('/api/users/', usersRouter);
 
-app.use(() => {
-    throw new HttpError('Could not find route', 404)
+app.use(() => {throw new HttpError("Page not found", 404)});
+
+app.use((error: any, req: Request, res: Response, next: NextFunction) =>{
+   if (res.headersSent){
+    return next (error);
+   }
+   res.status(error.code || 500)
+    res.json({message: error.message || "Unknown error"})
 })
 
 
-app.use((error: any, req: Request, res: Response, next: NextFunction) => {
-    if (res.headersSent) {
-        return next(error)
-    }
-    res.status(error.code || 500)
-    res.json({message: error.message || 'Unknown request'})
-})
+
 
 const port = 3000
 app.listen(port, () => {
